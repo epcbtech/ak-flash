@@ -306,6 +306,7 @@ int uart_boot_dev_opentty(const char* devpath) {
 	string st_devconflict;
 	string command;
 
+#if 0
 	/* Check conflick device */
 	command.assign("readlink -f ");
 	command.append(devpath);
@@ -356,7 +357,7 @@ int uart_boot_dev_opentty(const char* devpath) {
 		std::vector<std::string> vector_ret_lines;
 		extract_complete_lines(st_devconflict, vector_ret_lines);
 
-		if (vector_ret_lines.size() > 3) {
+		if (vector_ret_lines.size() > 3) { // Note: in read application, set is > 3
 			cout << "\n[ERR] " << "Device is busy now, Please check !\n" << endl;
 			for (auto line : vector_ret_lines) {
 				std::cout << line << '\n';
@@ -433,6 +434,10 @@ int uart_boot_dev_opentty(const char* devpath) {
 	}
 
 	uart_boot_dev_fd = open(st_realdevpath.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
+
+#else
+	uart_boot_dev_fd = open(devpath, O_RDWR | O_NOCTTY | O_NDELAY);
+#endif
 
 	if (uart_boot_dev_fd < 0) {
 		return uart_boot_dev_fd;
