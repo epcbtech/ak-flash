@@ -1,7 +1,7 @@
 # AK - Flash
 [<img src="https://github.com/epcbtech/ak-base-kit-stm32l151/blob/main/hardware/images/ak-embedded-software-logo.jpg" width="240"/>](https://github.com/epcbtech/ak-base-kit-stm32l151/blob/main/hardware/images/ak-embedded-software-logo.jpg)
 
-The application runs on the host PC or on the embedded computer like Raspberry Pi, helping to update firmware via Serial (UART) for microcontroller devices (MCU) using AK Embedded Software.
+The application runs on the host PC or on the embedded computer like Raspberry Pi, helping to update firmware via Serial (UART) for microcontroller devices (MCU) using [AK Embedded Base Source](https://github.com/epcbtech/ak-base-kit-stm32l151).
 
 ### Installation
 ```sh
