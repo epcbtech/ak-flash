@@ -3,14 +3,14 @@
 
 The application runs on the host PC or on the embedded computer like Raspberry Pi, helping to update firmware via Serial (UART) for microcontroller devices (MCU) using AK Embedded Software.
 
-### Installation:
+### Installation
 ```sh
 cd ak_flash
 make
 sudo make install
 ```
 
-### Example:
+### Example
 ```sh
 ak_flash /dev/ttyUSB0 ak-base-kit-stm32l151-application.bin 0x08003000
 ```
