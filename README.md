@@ -18,6 +18,5 @@ ak_flash /dev/ttyUSB0 ak-base-kit-stm32l151-application.bin 0x08003000
 ### Reference
 | Topic | Link |
 | ------ | ------ |
-| AK Embedded Base Source | https://github.com/epcbtech/ak-base-kit-stm32l151 |
 | Blog & Tutorial | https://epcb.vn/blogs/ak-embedded-software |
 | Where to buy KIT? | https://epcb.vn/products/ak-embedded-base-kit-lap-trinh-nhung-vi-dieu-khien-mcu |

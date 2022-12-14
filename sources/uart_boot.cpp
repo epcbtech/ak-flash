@@ -31,6 +31,7 @@
 using namespace std;
 
 //#define FRAME_DEBUG_EN
+//#define CHECK_CONFICT_DEVICE_EN
 
 #define CLOCKID					CLOCK_REALTIME
 #define TIMER_1MS_SIG			SIGUSR1
@@ -56,7 +57,7 @@ uint8_t frame_SYSTEM_AK_FLASH_UPDATE_REQ[] = { \
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, };
 
 /* help string */
-static string help_string("example: ak_flash /dev/ttyUSB0 build/file_name.bin");
+static string help_string("ak_flash /dev/ttyUSB0 ak-base-kit-stm32l151-application.bin 0x08003000");
 
 /* firmware file */
 static string firmware_path;
@@ -89,7 +90,6 @@ static uart_boot_to_t uart_boot_to;
 static void uart_boot_set_to(uint32_t ms, uint32_t cmd);
 static void uart_boot_clear_to();
 
-
 #define UART_BOOT_CMD_HANDSHAKE_REQ_SIG_TO			0x02
 #define UART_BOOT_CMD_UPDATE_REQ_SIG_TO				0x03
 #define UART_BOOT_CMD_TRANSFER_FW_REQ_SIG_TO		0x04
@@ -102,16 +102,16 @@ static void uart_boot_clear_to();
 
 #define HANDSHAKE_REQ_RETRY_COUNTER_MAX				5 /* ~ 10s */
 
-void uart_boot_cmd_handshake_req(void*);
-void uart_boot_cmd_handshake_res(void*);
-void uart_boot_cmd_update_req(void*);
-void uart_boot_cmd_update_res(void*);
-void uart_boot_cmd_transfer_fw_req(void*);
-void uart_boot_cmd_transfer_fw_res(void*);
-void uart_boot_cmd_checksum_fw_req(void*);
-void uart_boot_cmd_checksum_fw_res(void*);
+static void uart_boot_cmd_handshake_req(void*);
+static void uart_boot_cmd_handshake_res(void*);
+static void uart_boot_cmd_update_req(void*);
+static void uart_boot_cmd_update_res(void*);
+static void uart_boot_cmd_transfer_fw_req(void*);
+static void uart_boot_cmd_transfer_fw_res(void*);
+static void uart_boot_cmd_checksum_fw_req(void*);
+static void uart_boot_cmd_checksum_fw_res(void*);
 
-void timer_handler(int sig, siginfo_t *si, void *uc);
+static void timer_handler(int sig, siginfo_t *si, void *uc);
 
 void print_progress (double percentage, transfer_fw_status_t* fw_stt) {
 	int val = (int) (percentage * 100);
@@ -299,15 +299,16 @@ void extract_complete_lines(std::string &buf, std::vector<std::string> &lines) {
 }
 
 int uart_boot_dev_opentty(const char* devpath) {
-	char readbuf[256];
-	FILE *st_sys_ret_fp;
 	struct termios options;
 	string st_realdevpath;
 	string st_devconflict;
 	string command;
 
-#if 0
-	/* Check conflick device */
+#ifdef CHECK_CONFICT_DEVICE_EN
+	char readbuf[256];
+	FILE *st_sys_ret_fp;
+
+	/* Check conflict device */
 	command.assign("readlink -f ");
 	command.append(devpath);
 	st_sys_ret_fp = popen(command.c_str(), "r");
@@ -316,7 +317,7 @@ int uart_boot_dev_opentty(const char* devpath) {
 
 	if (st_sys_ret_fp != NULL) {
 		do {
-			memset(readbuf, 255, 0);
+			memset(readbuf, 0, sizeof(readbuf));
 			fgets(readbuf, 254, st_sys_ret_fp);
 			if(feof(st_sys_ret_fp)) break;
 
@@ -340,7 +341,7 @@ int uart_boot_dev_opentty(const char* devpath) {
 
 		if (st_sys_ret_fp != NULL) {
 			do {
-				memset(readbuf, 255, 0);
+				memset(readbuf, 0, sizeof(readbuf));
 				fgets(readbuf, 254, st_sys_ret_fp);
 				if(feof(st_sys_ret_fp)) break;
 
@@ -373,7 +374,7 @@ int uart_boot_dev_opentty(const char* devpath) {
 
 		if (st_sys_ret_fp != NULL) {
 			do {
-				memset(readbuf, 255, 0);
+				memset(readbuf, 0, sizeof(readbuf));
 				fgets(readbuf, 254, st_sys_ret_fp);
 				if(feof(st_sys_ret_fp)) break;
 
@@ -406,7 +407,7 @@ int uart_boot_dev_opentty(const char* devpath) {
 
 		if (st_sys_ret_fp != NULL) {
 			do {
-				memset(readbuf, 255, 0);
+				memset(readbuf, 0, sizeof(readbuf));
 				fgets(readbuf, 254, st_sys_ret_fp);
 				if(feof(st_sys_ret_fp)) break;
 
@@ -603,14 +604,18 @@ void* uart_boot_rx_thread_handler(void*) {
 	uint8_t rx_buffer[RX_BUFFER_SIZE];
 	uint32_t rx_read_len;
 
+#if 1 // Trigger go to boot mode via console comment
 	const char* fwu = "fwu\r\n";
 	write(uart_boot_dev_fd, fwu, strlen(fwu));
 	usleep(200000);
+#endif
 
-	//	write(uart_boot_dev_fd, frame_SYSTEM_AK_FLASH_UPDATE_REQ, \
-	//		  sizeof(frame_SYSTEM_AK_FLASH_UPDATE_REQ));
-	// usleep(200000);
-	// tcflush(uart_boot_dev_fd, TCIFLUSH);
+#if 0 // Trigger go to boot mode via ak message format
+	write(uart_boot_dev_fd, frame_SYSTEM_AK_FLASH_UPDATE_REQ, \
+		  sizeof(frame_SYSTEM_AK_FLASH_UPDATE_REQ));
+	usleep(200000);
+	tcflush(uart_boot_dev_fd, TCIFLUSH);
+#endif
 
 	uart_boot_cmd_handshake_req(NULL);
 
