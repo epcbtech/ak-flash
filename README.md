@@ -5,7 +5,7 @@ The application runs on the host PC or on the embedded computer like Raspberry P
 
 ### Installation
 ```sh
-cd ak_flash
+cd ak-flash
 make
 sudo make install
 ```
