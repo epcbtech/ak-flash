@@ -4,7 +4,7 @@
 ##############################################################################
 
 TOOL_DIR =
-MODULE	 = ak_flash
+MODULE	 = ak-flash
 OPTIMIZE = -g -Os
 CXX	 = g++
 CC	 = gcc

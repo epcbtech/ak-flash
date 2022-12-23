@@ -12,7 +12,7 @@ sudo make install
 
 ### Example
 ```sh
-ak_flash /dev/ttyUSB0 ak-base-kit-stm32l151-application.bin 0x08003000
+ak-flash /dev/ttyUSB0 ak-base-kit-stm32l151-application.bin 0x08003000
 ```
 
 ### Reference
